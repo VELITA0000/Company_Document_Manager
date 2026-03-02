@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Document</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Document</h1>
+        
+        <input type="file" id="fileInput">
+        <input type="text" id="docName" placeholder="Document name">
+        
+        <select id="role">
+            <option value="">Select role</option>
+            <option value="owner">Owner</option>
+            <option value="manager">Manager</option>
+            <option value="worker">Worker</option>
+        </select>
+        
+        <select id="type">
+            <option value="">Select type</option>
+            <option value="contract">Contract</option>
+            <option value="report">Report</option>
+            <option value="invoices">Invoices</option>
+        </select>
+        
+        <button onclick="upload()">Upload</button>
+        <button onclick="window.location.href='/'">Back</button>
+        
+        <div id="message"></div>
+    </div>
+
+    <script>
+        async function upload() {
+            const file = document.getElementById('fileInput').files[0];
+            const docName = document.getElementById('docName').value;
+            const role = document.getElementById('role').value;
+            const type = document.getElementById('type').value;
+            
+            if (!file || !docName || !role || !type) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('doc_name', docName);
+            formData.append('role', role);
+            formData.append('doc_type', type);
+            
+            try {
+                const res = await fetch('/api/upload', {method: 'POST', body: formData});
+                const data = await res.json();
+                
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                } else {
+                    alert('Upload successful');
+                    document.getElementById('fileInput').value = '';
+                    document.getElementById('docName').value = '';
+                    document.getElementById('role').value = '';
+                    document.getElementById('type').value = '';
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+    </script>
+</body>
+</html>
